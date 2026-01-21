@@ -6,9 +6,9 @@ from rating_based_recommendation import get_top_rated_items
 from content_based_filtering import content_based_recommendation
 from collaborative_based_filtering import collaborative_filtering_recommendations
 
-# =================================================
+# -------------------------------------------------
 # Page Config
-# =================================================
+# -------------------------------------------------
 st.set_page_config(
     page_title="Smart Recommendation System",
     layout="wide"
@@ -16,9 +16,9 @@ st.set_page_config(
 
 st.title("🌈 Smart Product Recommendation System")
 
-# =================================================
+# -------------------------------------------------
 # COLORFUL & ATTRACTIVE CSS
-# =================================================
+# -------------------------------------------------
 st.markdown("""
 <style>
 html, body, [class*="css"] {
@@ -86,9 +86,9 @@ h2, h3 {
 </style>
 """, unsafe_allow_html=True)
 
-# =================================================
+# -------------------------------------------------
 # Load & preprocess data
-# =================================================
+# -------------------------------------------------
 @st.cache_data
 def load_data():
     raw = pd.read_csv("clean_data.csv")
@@ -96,26 +96,18 @@ def load_data():
 
 data = load_data()
 
-# =================================================
-# Helper: ALWAYS take only first image URL
-# =================================================
+# -------------------------------------------------
+# Helpers
+# -------------------------------------------------
 def get_first_image(url):
-    """
-    Returns ONLY the first image URL if multiple URLs exist.
-    Handles | , space separated values and empty cases.
-    """
+    """Always return only the first image URL"""
     if pd.isna(url) or url == "":
         return "https://via.placeholder.com/150"
-
     for sep in ["|", ",", " "]:
         if sep in url:
             return url.split(sep)[0].strip()
-
     return url.strip()
 
-# =================================================
-# Helper: Partial search
-# =================================================
 def find_matching_product(data, user_input):
     matches = data[data["Name"].str.contains(
         user_input,
@@ -126,9 +118,6 @@ def find_matching_product(data, user_input):
         return None
     return matches.iloc[0]["Name"]
 
-# =================================================
-# Helper: Multi-product search
-# =================================================
 def get_multi_product_recommendations(data, user_input, top_n=5):
     products = [p.strip() for p in user_input.split(",") if p.strip()]
     all_recs = []
@@ -148,9 +137,9 @@ def get_multi_product_recommendations(data, user_input, top_n=5):
 
     return pd.concat(all_recs).drop_duplicates().head(top_n * 2)
 
-# =================================================
-# Display products (SAFE – NO KeyError)
-# =================================================
+# -------------------------------------------------
+# Display products safely (NO KeyError)
+# -------------------------------------------------
 def display_products(df, cols=5):
     if df.empty:
         st.warning("No products found.")
@@ -167,7 +156,7 @@ def display_products(df, cols=5):
 
             p = df.iloc[idx]
 
-            # Safe column access
+            # SAFE access (important fix)
             name = p.get("Name", "N/A")
             brand = p.get("Brand", "N/A")
             rating = p.get("Rating", "N/A")
@@ -187,9 +176,9 @@ def display_products(df, cols=5):
 
             idx += 1
 
-# =================================================
+# -------------------------------------------------
 # Sidebar Inputs
-# =================================================
+# -------------------------------------------------
 st.sidebar.header("🧑‍💻 User Options")
 
 user_id = st.sidebar.number_input(
@@ -204,9 +193,9 @@ product_name = st.sidebar.text_input(
 
 recommend_btn = st.sidebar.button("✨ Get Recommendations")
 
-# =================================================
+# -------------------------------------------------
 # Recommendation Logic
-# =================================================
+# -------------------------------------------------
 if recommend_btn:
 
     # 🔍 SEARCH FLOW
@@ -274,8 +263,8 @@ if recommend_btn:
 
             display_products(final_rec)
 
-# =================================================
+# -------------------------------------------------
 # Footer
-# =================================================
+# -------------------------------------------------
 st.markdown("---")
 st.caption("✨ Colorful Recommendation System • Content • Collaborative • Hybrid")
