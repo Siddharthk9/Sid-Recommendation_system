@@ -11,7 +11,7 @@ from collaborative_based_filtering import collaborative_filtering_recommendation
 # Page Config
 # -------------------------------------------------
 st.set_page_config(
-    page_title="Smart Recommendation System",
+    page_title="The Smart Recommendation System",
     layout="wide"
 )
 
