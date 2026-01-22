@@ -14,7 +14,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("Smart Product Recommendation System")
+st.title("🌈 Smart Product Recommendation System")
 
 # -------------------------------------------------
 # COLORFUL & ATTRACTIVE CSS
@@ -100,13 +100,18 @@ data = load_data()
 # Helpers
 # -------------------------------------------------
 def get_first_image(url):
-<<<<<<< HEAD
+    """
+    Always return a valid image URL.
+    Uses placeholder if URL is broken.
+    """
     placeholder = "https://via.placeholder.com/150"
 
     if pd.isna(url) or str(url).strip() == "":
         return placeholder
 
     url = str(url).strip()
+
+    # Take only first URL if multiple exist
     for sep in ["|", ",", " "]:
         if sep in url:
             url = url.split(sep)[0].strip()
@@ -115,22 +120,13 @@ def get_first_image(url):
         return placeholder
 
     return url
-=======
-    """Always return only the first image URL"""
-    if pd.isna(url) or url == "":
-        return "https://via.placeholder.com/150"
-    for sep in ["|", ",", " "]:
-        if sep in url:
-            return url.split(sep)[0].strip()
-    return url.strip()
->>>>>>> dae51923ea5e42a49b0aa785e49d9a104f8345f3
 
 def find_matching_product(data, user_input):
     matches = data[data["Name"].str.contains(
         user_input,
         case=False,
         na=False,
-        regex=False
+        regex=False   # 🔥 prevents regex crash
     )]
     if matches.empty:
         return None
@@ -156,11 +152,7 @@ def get_multi_product_recommendations(data, user_input, top_n=5):
     return pd.concat(all_recs).drop_duplicates().head(top_n * 2)
 
 # -------------------------------------------------
-<<<<<<< HEAD
-# Display products
-=======
-# Display products safely (NO KeyError)
->>>>>>> dae51923ea5e42a49b0aa785e49d9a104f8345f3
+# Display products safely
 # -------------------------------------------------
 def display_products(df, cols=5):
     if df.empty:
@@ -178,10 +170,6 @@ def display_products(df, cols=5):
 
             p = df.iloc[idx]
 
-<<<<<<< HEAD
-=======
-            # SAFE access (important fix)
->>>>>>> dae51923ea5e42a49b0aa785e49d9a104f8345f3
             name = p.get("Name", "N/A")
             brand = p.get("Brand", "N/A")
             rating = p.get("Rating", "N/A")
@@ -206,8 +194,16 @@ def display_products(df, cols=5):
 # -------------------------------------------------
 st.sidebar.header("🧑‍💻 User Options")
 
-user_id = st.sidebar.number_input("User ID (0 = New User)", min_value=0, step=1)
-product_name = st.sidebar.text_input("🔍 Search products (comma separated allowed)")
+user_id = st.sidebar.number_input(
+    "User ID (0 = New User)",
+    min_value=0,
+    step=1
+)
+
+product_name = st.sidebar.text_input(
+    "🔍 Search products (comma separated allowed)"
+)
+
 recommend_btn = st.sidebar.button("✨ Get Recommendations")
 
 # -------------------------------------------------
@@ -219,15 +215,22 @@ if recommend_btn:
     if product_name.strip():
         st.subheader("🔍 Similar Products")
 
-        search_recs = get_multi_product_recommendations(data, product_name, top_n=5)
+        search_recs = get_multi_product_recommendations(
+            data,
+            product_name,
+            top_n=5
+        )
         display_products(search_recs)
 
+        # ✨ You may also like
         if user_id > 0:
             st.markdown("---")
             st.subheader("✨ You may also like")
 
             collab_recs = collaborative_filtering_recommendations(
-                data, target_user_id=user_id, top_n=5
+                data,
+                target_user_id=user_id,
+                top_n=5
             )
 
             if not search_recs.empty and "Name" in collab_recs.columns:
@@ -237,13 +240,9 @@ if recommend_btn:
 
             display_products(collab_recs)
 
-        st.markdown("---")
-        st.subheader("⭐ Trending Products")
-        display_products(get_top_rated_items(data, top_n=10))
-
     # ⭐ NEW USER
     elif user_id == 0:
-        st.subheader("⭐ Trending Products")
+        st.subheader("⭐ Top Rated Products")
         display_products(get_top_rated_items(data, top_n=10))
 
     # 🎯 EXISTING USER
@@ -257,8 +256,17 @@ if recommend_btn:
             last_item = user_history.iloc[-1]["Name"]
             st.caption(f"Because you liked **{last_item}**")
 
-            content_rec = content_based_recommendation(data, last_item, top_n=5)
-            collab_rec = collaborative_filtering_recommendations(data, user_id, top_n=5)
+            content_rec = content_based_recommendation(
+                data,
+                item_name=last_item,
+                top_n=5
+            )
+
+            collab_rec = collaborative_filtering_recommendations(
+                data,
+                target_user_id=user_id,
+                top_n=5
+            )
 
             final_rec = (
                 pd.concat([content_rec, collab_rec])
@@ -268,15 +276,8 @@ if recommend_btn:
 
             display_products(final_rec)
 
-<<<<<<< HEAD
-        st.markdown("---")
-        st.subheader("⭐ Trending Products")
-        display_products(get_top_rated_items(data, top_n=10))
-
-=======
->>>>>>> dae51923ea5e42a49b0aa785e49d9a104f8345f3
 # -------------------------------------------------
 # Footer
 # -------------------------------------------------
 st.markdown("---")
-st.caption("✨ Recommendation System • Rating • Content • Collaborative • Hybrid")
+st.caption("✨ Colorful Recommendation System • Content • Collaborative • Hybrid")
