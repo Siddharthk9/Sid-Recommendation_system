@@ -1,7 +1,16 @@
 import pandas as pd
 import numpy as np
 
-data = pd.read_csv("clean_data.csv")
+# data = pd.read_csv("clean_data.csv")
+
+import os
+import pandas as pd
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(BASE_DIR, "clean_data.csv")
+
+data = pd.read_csv(DATA_PATH)
+
 
 def process_data(data: pd.DataFrame) -> pd.DataFrame:
     # Replace invalid values with NaN
