@@ -1,8 +1,7 @@
-altair>=5.0.0
-pandas
+streamlit==1.39.0
+pandas==2.3.3
 numpy
-scikit-learn
+scikit-learn==1.6.1
 scipy
-joblib
-matplotlib
-seaborn
+altair==5.5.0
+rich==13.9.4
