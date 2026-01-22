@@ -15,7 +15,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🌈 Smart Product Recommendation System")
+st.title("Smart Product Recommendation System")
 
 # -------------------------------------------------
 # COLORFUL & ATTRACTIVE CSS
