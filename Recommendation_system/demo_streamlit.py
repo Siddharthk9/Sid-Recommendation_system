@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os
 
 from preprocess_data import process_data
 from rating_based_recommendation import get_top_rated_items
@@ -94,7 +95,7 @@ h2, h3 {
 #     raw = pd.read_csv("clean_data.csv")
 #     return process_data(raw)
 
-import os
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
