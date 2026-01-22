@@ -100,6 +100,7 @@ data = load_data()
 # Helpers
 # -------------------------------------------------
 def get_first_image(url):
+<<<<<<< HEAD
     placeholder = "https://via.placeholder.com/150"
 
     if pd.isna(url) or str(url).strip() == "":
@@ -114,6 +115,15 @@ def get_first_image(url):
         return placeholder
 
     return url
+=======
+    """Always return only the first image URL"""
+    if pd.isna(url) or url == "":
+        return "https://via.placeholder.com/150"
+    for sep in ["|", ",", " "]:
+        if sep in url:
+            return url.split(sep)[0].strip()
+    return url.strip()
+>>>>>>> dae51923ea5e42a49b0aa785e49d9a104f8345f3
 
 def find_matching_product(data, user_input):
     matches = data[data["Name"].str.contains(
@@ -146,7 +156,11 @@ def get_multi_product_recommendations(data, user_input, top_n=5):
     return pd.concat(all_recs).drop_duplicates().head(top_n * 2)
 
 # -------------------------------------------------
+<<<<<<< HEAD
 # Display products
+=======
+# Display products safely (NO KeyError)
+>>>>>>> dae51923ea5e42a49b0aa785e49d9a104f8345f3
 # -------------------------------------------------
 def display_products(df, cols=5):
     if df.empty:
@@ -164,6 +178,10 @@ def display_products(df, cols=5):
 
             p = df.iloc[idx]
 
+<<<<<<< HEAD
+=======
+            # SAFE access (important fix)
+>>>>>>> dae51923ea5e42a49b0aa785e49d9a104f8345f3
             name = p.get("Name", "N/A")
             brand = p.get("Brand", "N/A")
             rating = p.get("Rating", "N/A")
@@ -250,10 +268,13 @@ if recommend_btn:
 
             display_products(final_rec)
 
+<<<<<<< HEAD
         st.markdown("---")
         st.subheader("⭐ Trending Products")
         display_products(get_top_rated_items(data, top_n=10))
 
+=======
+>>>>>>> dae51923ea5e42a49b0aa785e49d9a104f8345f3
 # -------------------------------------------------
 # Footer
 # -------------------------------------------------
