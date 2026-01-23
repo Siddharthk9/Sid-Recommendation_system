@@ -1,4 +1,7 @@
-pandas
+streamlit==1.39.0
+pandas==2.3.3
 numpy
-scikit-learn
-streamlit
+scikit-learn==1.6.1
+scipy
+altair==5.5.0
+rich==13.9.4
