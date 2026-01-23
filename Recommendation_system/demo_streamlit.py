@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os
 
 from preprocess_data import process_data
 from rating_based_recommendation import get_top_rated_items
@@ -10,11 +11,11 @@ from collaborative_based_filtering import collaborative_filtering_recommendation
 # Page Config
 # -------------------------------------------------
 st.set_page_config(
-    page_title="Smart Recommendation System",
+    page_title="The Smart Recommendation System",
     layout="wide"
 )
 
-st.title("🌈 Smart Product Recommendation System")
+st.title("Smart Product Recommendation System")
 
 # -------------------------------------------------
 # COLORFUL & ATTRACTIVE CSS
@@ -87,11 +88,17 @@ h2, h3 {
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------
+# File Paths (CLOUD SAFE)
+# -------------------------------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(BASE_DIR, "clean_data.csv")
+
+# -------------------------------------------------
 # Load & preprocess data
 # -------------------------------------------------
 @st.cache_data
 def load_data():
-    raw = pd.read_csv("clean_data.csv")
+    raw = pd.read_csv(DATA_PATH)
     return process_data(raw)
 
 data = load_data()
@@ -100,10 +107,6 @@ data = load_data()
 # Helpers
 # -------------------------------------------------
 def get_first_image(url):
-    """
-    Always return a valid image URL.
-    Uses placeholder if URL is broken.
-    """
     placeholder = "https://via.placeholder.com/150"
 
     if pd.isna(url) or str(url).strip() == "":
@@ -111,7 +114,6 @@ def get_first_image(url):
 
     url = str(url).strip()
 
-    # Take only first URL if multiple exist
     for sep in ["|", ",", " "]:
         if sep in url:
             url = url.split(sep)[0].strip()
@@ -126,7 +128,7 @@ def find_matching_product(data, user_input):
         user_input,
         case=False,
         na=False,
-        regex=False   # 🔥 prevents regex crash
+        regex=False
     )]
     if matches.empty:
         return None
@@ -211,7 +213,6 @@ recommend_btn = st.sidebar.button("✨ Get Recommendations")
 # -------------------------------------------------
 if recommend_btn:
 
-    # 🔍 SEARCH FLOW
     if product_name.strip():
         st.subheader("🔍 Similar Products")
 
@@ -222,7 +223,6 @@ if recommend_btn:
         )
         display_products(search_recs)
 
-        # ✨ You may also like
         if user_id > 0:
             st.markdown("---")
             st.subheader("✨ You may also like")
@@ -240,12 +240,10 @@ if recommend_btn:
 
             display_products(collab_recs)
 
-    # ⭐ NEW USER
     elif user_id == 0:
         st.subheader("⭐ Top Rated Products")
         display_products(get_top_rated_items(data, top_n=10))
 
-    # 🎯 EXISTING USER
     else:
         st.subheader("🎯 Personalized Recommendations")
 
