@@ -11,11 +11,11 @@ from collaborative_based_filtering import collaborative_filtering_recommendation
 # Page Config
 # -------------------------------------------------
 st.set_page_config(
-    page_title="My Smart Recommendation System",
+    page_title="Smart Recommendation System",
     layout="wide"
 )
 
-st.title("Smart Product Recommendation System")
+st.title("My Smart Product Recommendation System")
 
 # -------------------------------------------------
 # COLORFUL & ATTRACTIVE CSS
