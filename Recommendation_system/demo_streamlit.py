@@ -10,91 +10,12 @@ from collaborative_based_filtering import collaborative_filtering_recommendation
 # -------------------------------------------------
 # Page Config
 # -------------------------------------------------
-
-st.set_page_config(page_title="Smart Recommendation System", layout="wide")
-st.title("🛍️ Smart Product Recommendation System")
 st.set_page_config(
-    page_title="Smart Recommendation System",
+    page_title="The Smart Recommendation System",
     layout="wide"
 )
 
-st.title("My Smart Product Recommendation System")
-
-# -------------------------------------------------
-# COLORFUL & ATTRACTIVE CSS
-# -------------------------------------------------
-st.markdown("""
-<style>
-html, body, [class*="css"] {
-    font-family: 'Poppins', 'Segoe UI', sans-serif;
-}
-
-.product-card {
-    background: linear-gradient(145deg, #ffffff, #f3f7ff);
-    border-radius: 20px;
-    padding: 18px;
-    text-align: center;
-    box-shadow: 0 8px 22px rgba(0,0,0,0.12);
-    transition: all 0.3s ease;
-}
-
-.product-card:hover {
-    transform: translateY(-8px) scale(1.04);
-    box-shadow: 0 16px 32px rgba(0,0,0,0.18);
-}
-
-.product-img {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 4px solid #ff7a00;
-    margin-bottom: 12px;
-}
-
-.product-name {
-    font-weight: 600;
-    font-size: 15px;
-    margin: 8px 0;
-    color: #222;
-}
-
-.product-meta {
-    font-size: 13px;
-    color: #555;
-}
-
-.rating-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, #00c853, #64dd17);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    margin-top: 6px;
-}
-
-.review-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, #2962ff, #448aff);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    margin-top: 6px;
-}
-
-h2, h3 {
-    color: #ff6a00;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# -------------------------------------------------
-# File Paths (CLOUD SAFE)
-# -------------------------------------------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_PATH = os.path.join(BASE_DIR, "clean_data.csv")
+st.title("Smart Product Recommendation System")
 
 # -------------------------------------------------
 # Load & preprocess data
@@ -102,6 +23,9 @@ DATA_PATH = os.path.join(BASE_DIR, "clean_data.csv")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(BASE_DIR, "clean_data.csv")
 
+# -------------------------------------------------
+# Load & preprocess data
+# -------------------------------------------------
 @st.cache_data
 def load_data():
     raw = pd.read_csv(DATA_PATH)

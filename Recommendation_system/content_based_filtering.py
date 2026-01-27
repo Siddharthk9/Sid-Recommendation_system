@@ -22,7 +22,8 @@ def content_based_recommendation(data, item_name, top_n=10):
 
   recommended_items_indices = [x[0] for x in top_similar_prod]
 
-  recommended_item_details = data.iloc[recommended_items_indices][['Name', 'ReviewCount', 'Brand','ImageURL', 'Rating']]
+  recommended_item_details = data.iloc[recommended_items_indices][['Name', 'ReviewCount', 'Brand', 'ImageURL', 'Rating']
+]
 
   return recommended_item_details
 
