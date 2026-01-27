@@ -23,22 +23,16 @@ st.title("Smart Product Recommendation System")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(BASE_DIR, "clean_data.csv")
 
-# -------------------------------------------------
-# Load & preprocess data
-# -------------------------------------------------
 @st.cache_data
 def load_data():
     raw = pd.read_csv(DATA_PATH)
     data = process_data(raw)
 
-    # ---- NORMALIZE COLUMN NAMES ----
     data.columns = [c.strip() for c in data.columns]
 
-    # ---- FORCE RATING CLEANING ----
     if "Rating" in data.columns:
         data["Rating"] = pd.to_numeric(data["Rating"], errors="coerce").fillna(0).round(2)
 
-    # ---- FORCE IMAGE CLEANING ----
     if "ImageURL" in data.columns:
         data["ImageURL"] = data["ImageURL"].astype(str)
 
@@ -47,7 +41,7 @@ def load_data():
 data = load_data()
 
 # -------------------------------------------------
-# SMART IMAGE HANDLER (FIXED)
+# Image Handler
 # -------------------------------------------------
 def get_first_image(url):
     placeholder = "https://via.placeholder.com/150"
@@ -71,6 +65,27 @@ def get_first_image(url):
         return url
 
     return placeholder
+
+# -------------------------------------------------
+# Cold Start Collaborative (NEW USERS)
+# -------------------------------------------------
+def collaborative_for_new_users(data, top_n=10):
+
+    df = data.copy()
+
+    if "ReviewCount" not in df.columns:
+        df["ReviewCount"] = 1
+
+    df["popularity_score"] = (
+        df["Rating"] * 0.7 +
+        df["ReviewCount"].apply(lambda x: min(x, 1000)) * 0.3
+    )
+
+    return (
+        df.sort_values("popularity_score", ascending=False)
+          .drop_duplicates("Name")
+          .head(top_n)
+    )
 
 # -------------------------------------------------
 # Helpers
@@ -97,9 +112,10 @@ def get_multi_product_recommendations(data, user_input, top_n=5):
     return pd.concat(all_recs).drop_duplicates().head(top_n * 2)
 
 # -------------------------------------------------
-# Display products (FIXED)
+# Display Products (YOUR CSS)
 # -------------------------------------------------
 def display_products(df, cols=5):
+
     if df is None or df.empty:
         st.warning("No products found.")
         return
@@ -161,82 +177,90 @@ def display_products(df, cols=5):
 st.sidebar.header("🧑‍💻 User Options")
 
 user_id = st.sidebar.number_input("User ID (0 = New User)", min_value=0, step=1)
-
 product_name = st.sidebar.text_input("🔍 Search products (comma separated allowed)")
-
 recommend_btn = st.sidebar.button("✨ Get Recommendations")
 
 # -------------------------------------------------
-# HOME PAGE DEFAULT RECOMMENDATIONS
+# RECOMMENDATION FLOW (FIXED LOGIC)
 # -------------------------------------------------
+
 if not recommend_btn:
 
+    # ------------------ NEW USER ------------------
     if user_id == 0:
-        st.subheader("⭐ Top Rated Products (Trending Now)")
-        display_products(get_top_rated_items(data, 10))
+        st.subheader("🔥 Popular Picks (Collaborative - Cold Start)")
+        display_products(collaborative_for_new_users(data, 10))
 
+    # ---------------- EXISTING USER ----------------
     else:
-        st.subheader("🎯 Personalized Recommendations For You")
+        st.subheader("🎯 Personalized Recommendations")
 
         collab_recs = collaborative_filtering_recommendations(
             data, target_user_id=user_id, top_n=10
         )
 
         if collab_recs.empty:
-            st.info("Not enough data — showing trending products instead.")
-            display_products(get_top_rated_items(data, 10))
+            display_products(collaborative_for_new_users(data, 10))
         else:
             display_products(collab_recs)
 
+
 # -------------------------------------------------
-# ADVANCED RECOMMENDATION FLOW
+# WHEN USER CLICKS RECOMMEND
 # -------------------------------------------------
+
 if recommend_btn:
 
+    # ========== SEARCH CASE ==========
     if product_name.strip():
-        st.subheader("🔍 Similar Products (Content-Based)")
 
-        search_recs = get_multi_product_recommendations(data, product_name, 5)
-        display_products(search_recs)
+        st.subheader("🔍 Similar Products (Content-Based)")
+        display_products(get_multi_product_recommendations(data, product_name, 5))
+
+        st.markdown("---")
+
+        st.subheader("✨ You may also like (Collaborative)")
 
         if user_id > 0:
-            st.markdown("---")
-            st.subheader("✨ You may also like (Collaborative)")
-
-            collab_recs = collaborative_filtering_recommendations(
-                data, target_user_id=user_id, top_n=5
+            display_products(
+                collaborative_filtering_recommendations(
+                    data, target_user_id=user_id, top_n=5
+                )
             )
-
-            display_products(collab_recs)
-
-    elif user_id == 0:
-        st.subheader("⭐ Top Rated Products")
-        display_products(get_top_rated_items(data, 10))
-
-    else:
-        st.subheader("🎯 Hybrid Personalized Recommendations")
-
-        user_history = data[data["ID"] == user_id]
-
-        if user_history.empty:
-            display_products(get_top_rated_items(data, 10))
         else:
-            last_item = user_history.iloc[-1]["Name"]
-            st.caption(f"Because you liked **{last_item}**")
+            display_products(collaborative_for_new_users(data, 5))
 
-            content_rec = content_based_recommendation(data, last_item, 5)
-            collab_rec = collaborative_filtering_recommendations(data, user_id, 5)
+    # ========== NO SEARCH CASE ==========
+    else:
 
-            final_rec = (
-                pd.concat([content_rec, collab_rec])
-                .drop_duplicates()
-                .head(10)
-            )
+        if user_id == 0:
+            st.subheader("🔥 Popular Picks (Collaborative - Cold Start)")
+            display_products(collaborative_for_new_users(data, 10))
 
-            display_products(final_rec)
+        else:
+            st.subheader("🎯 Hybrid Personalized Recommendations")
+
+            user_history = data[data["ID"] == user_id]
+
+            if user_history.empty:
+                display_products(collaborative_for_new_users(data, 10))
+            else:
+                last_item = user_history.iloc[-1]["Name"]
+                st.caption(f"Because you liked **{last_item}**")
+
+                content_rec = content_based_recommendation(data, last_item, 5)
+                collab_rec = collaborative_filtering_recommendations(data, user_id, 5)
+
+                final_rec = (
+                    pd.concat([content_rec, collab_rec])
+                    .drop_duplicates()
+                    .head(10)
+                )
+
+                display_products(final_rec)
 
 # -------------------------------------------------
 # Footer
 # -------------------------------------------------
 st.markdown("---")
-st.caption("✨ Smart Recommendation System | Rating • Content • Collaborative • Hybrid")
+st.caption("✨ Smart Recommendation System | Rating • Content • Collaborative • Hybrid • Cold Start")
