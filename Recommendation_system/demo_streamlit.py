@@ -8,11 +8,15 @@ from content_based_filtering import content_based_recommendation
 from collaborative_based_filtering import collaborative_filtering_recommendations
 
 # -------------------------------------------------
-# Page Config
+# Page Config (ONLY ONCE, FIRST)
 # -------------------------------------------------
+st.set_page_config(
+    page_title="Smart Recommendation System",
+    layout="wide"
+)
 
-st.set_page_config(page_title="Smart Recommendation System", layout="wide")
 st.title("🛍️ Smart Product Recommendation System")
+
 st.set_page_config(
     page_title="Smart Recommendation System",
     layout="wide"
