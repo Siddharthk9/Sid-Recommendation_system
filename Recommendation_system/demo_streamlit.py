@@ -188,7 +188,7 @@ if not recommend_btn:
 
     # ------------------ NEW USER ------------------
     if user_id == 0:
-        st.subheader("🔥 Popular Picks (Collaborative - Cold Start)")
+        st.subheader("🔥 Popular Picks")
         display_products(collaborative_for_new_users(data, 10))
 
     # ---------------- EXISTING USER ----------------
